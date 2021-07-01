@@ -80,17 +80,10 @@ module VERIFICATION
   // Memory Usage
   // ########################
 
-    rule #memoryUsageUpdate(#memoryUsageUpdate(MU, START0, WIDTH0), START1, WIDTH1) => #memoryUsageUpdate(MU, START0, WIDTH0)
-      requires START1 +Int WIDTH1 <=Int START0 +Int WIDTH0
-       andBool 0  <Int WIDTH0
-       andBool 0 <=Int WIDTH1
-      [simplification]
-
-    rule #memoryUsageUpdate(#memoryUsageUpdate(MU, START0, WIDTH0), START1, WIDTH1) => #memoryUsageUpdate(MU, START1, WIDTH1)
-      requires START0 +Int WIDTH0 <Int START1 +Int WIDTH1
-       andBool 0 <=Int WIDTH0
-       andBool 0  <Int WIDTH1
-      [simplification]
+    rule #memoryUsageUpdate(#memoryUsageUpdate(MU, START0, WIDTH0), START1, WIDTH1) => #memoryUsageUpdate(MU, START0, WIDTH0)  requires START1 +Int WIDTH1 <=Int START0 +Int WIDTH0 andBool 0  <Int WIDTH0
+                                                                                                                                                                                    andBool 0 <=Int WIDTH1 [simplification]
+    rule #memoryUsageUpdate(#memoryUsageUpdate(MU, START0, WIDTH0), START1, WIDTH1) => #memoryUsageUpdate(MU, START1, WIDTH1)  requires START0 +Int WIDTH0  <Int START1 +Int WIDTH1 andBool 0 <=Int WIDTH0
+                                                                                                                                                                                    andBool 0  <Int WIDTH1 [simplification]
 
     rule 0 <=Int #memoryUsageUpdate(_MU, _START, _WIDTH) => true [simplification]
 
@@ -100,9 +93,11 @@ module VERIFICATION
 
     rule WS ++ .ByteArray => WS [simplification]
     
-    rule ( WS1 ++ WS2 ) ++ WS3 => WS1 ++ ( WS2 ++ WS3 ) [simplification]
+    // TODO: disabled; is this necessary?
+    // rule ( WS1 ++ WS2 ) ++ WS3 => WS1 ++ ( WS2 ++ WS3 ) [simplification]
 
     // TODO: inserted from VERIFICATION-HASKELL
+    // doesn't it make more sense to go here? why would it only be for the haskell backend?
     rule BA1 ++ (BA2 ++ BA3) => (BA1 ++ BA2) ++ BA3 [concrete(BA1, BA2), simplification]
 
     rule                #sizeWordStack(WS, N)             <Int SIZE =>                  #sizeWordStack(WS, 0) +Int N               <Int SIZE  requires N =/=Int 0 [simplification]
