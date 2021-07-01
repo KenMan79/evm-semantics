@@ -74,8 +74,6 @@ module VERIFICATION
       => #parseByteStack(substrString(Keccak256(FSIG), 0, 8))
       ++ #encodeArgs(ARGS)
 
-    rule chop(I) => 0 requires I ==Int pow256 [simplification]
-
   // ########################
   // Memory Usage
   // ########################
@@ -94,6 +92,7 @@ module VERIFICATION
     rule WS ++ .ByteArray => WS [simplification]
     
     // TODO: disabled; is this necessary?
+    // TODO: still passes without this lemma!
     // rule ( WS1 ++ WS2 ) ++ WS3 => WS1 ++ ( WS2 ++ WS3 ) [simplification]
 
     // TODO: inserted from VERIFICATION-HASKELL
@@ -144,10 +143,6 @@ module VERIFICATION
       requires #rangeAddress(ADDR)
       [simplification]
 
-    rule chop((ADDR &Int maxUInt160) modInt pow160) => ADDR
-      requires #rangeAddress(ADDR)
-      [simplification]
-
   // ########################
   // Arithmetic
   // ########################
@@ -174,8 +169,7 @@ module VERIFICATION
 
     // safeMath mul check c / a == b where c == a * b
     rule (X *Int Y) /Int X => Y  requires X =/=Int 0 [simplification]
-    rule chop(X *Int Y) /Int X ==K Y => false  requires X =/=Int 0 andBool pow256 <=Int X *Int Y [simplification]
-
+    
     rule I1 *Int A +Int I2 *Int A => (I1 +Int I2) *Int A [simplification]
 
     rule I1 *Int A +Int B +Int C +Int D +Int I2 *Int A => (I1 +Int I2) *Int A +Int B +Int C +Int D [simplification]
@@ -202,6 +196,13 @@ module VERIFICATION
     rule X <=Int #ceil32(X)             => true   requires 0 <=Int X               [simplification]
     rule         #ceil32(X)  <Int X     => false  requires 0 <=Int X               [simplification]
     rule         #ceil32(X) <=Int pow16 => true   requires #range(0 <= X <= pow16) [simplification]
+
+    // chop
+
+    rule chop(X *Int Y                            ) /Int X ==K Y => false  requires X =/=Int 0 andBool pow256 <=Int X *Int Y [simplification]
+    rule chop(I                                   )              => 0      requires I ==Int pow256                           [simplification]
+    rule chop((ADDR &Int maxUInt160) modInt pow160)              => ADDR   requires #rangeAddress(ADDR)                      [simplification]
+
 
   // ########################
   // Gnosis
@@ -367,6 +368,8 @@ module VERIFICATION-JAVA [symbolic, kast]
        andBool #isConcrete(I1)
        andBool #isConcrete(I2)
       [simplification]
+
+    // chop
 
     rule chop(X +Int Y) => X +Int Y
       requires #range(0 <= X <= pow16)
