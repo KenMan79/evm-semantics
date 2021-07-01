@@ -102,12 +102,13 @@ module VERIFICATION
     
     rule ( WS1 ++ WS2 ) ++ WS3 => WS1 ++ ( WS2 ++ WS3 ) [simplification]
 
-    rule #sizeWordStack(WS, N) <Int SIZE => #sizeWordStack(WS, 0) +Int N <Int SIZE  requires N =/=Int 0 [simplification]
-    
-    rule SIZELIMIT <Int #sizeWordStack(WS, N) +Int DELTA  => SIZELIMIT <Int (#sizeWordStack(WS, 0) +Int N) +Int DELTA  requires N =/=Int 0 [simplification]
-    rule SIZELIMIT <Int #sizeWordStack(WS, N)             => SIZELIMIT <Int #sizeWordStack(WS, 0) +Int N               requires N =/=Int 0 [simplification]
+    // TODO: inserted from VERIFICATION-HASKELL
+    rule BA1 ++ (BA2 ++ BA3) => (BA1 ++ BA2) ++ BA3 [concrete(BA1, BA2), simplification]
 
-    rule #sizeWordStack(WS, N) <=Int SIZE => #sizeWordStack(WS, 0) +Int N <=Int SIZE  requires N =/=Int 0 [simplification]
+    rule                #sizeWordStack(WS, N)             <Int SIZE => #sizeWordStack(WS, 0) +Int N <Int SIZE                    requires N =/=Int 0 [simplification]
+    rule                #sizeWordStack(WS, N)            <=Int SIZE => #sizeWordStack(WS, 0) +Int N <=Int SIZE                   requires N =/=Int 0 [simplification]
+    rule SIZELIMIT <Int #sizeWordStack(WS, N) +Int DELTA            => SIZELIMIT <Int (#sizeWordStack(WS, 0) +Int N) +Int DELTA  requires N =/=Int 0 [simplification]
+    rule SIZELIMIT <Int #sizeWordStack(WS, N)                       => SIZELIMIT <Int #sizeWordStack(WS, 0) +Int N               requires N =/=Int 0 [simplification]
 
   // ########################
   // Range
@@ -305,7 +306,8 @@ module VERIFICATION-HASKELL [symbolic, kore]
   // Buffer Reasoning
   // ########################
 
-    rule BA1 ++ (BA2 ++ BA3) => (BA1 ++ BA2) ++ BA3 [concrete(BA1, BA2), simplification]
+    // TODO: moved to VERIFICATION
+    // rule BA1 ++ (BA2 ++ BA3) => (BA1 ++ BA2) ++ BA3 [concrete(BA1, BA2), simplification]
 
 endmodule
 
