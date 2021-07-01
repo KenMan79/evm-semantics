@@ -199,9 +199,9 @@ module VERIFICATION
 
     rule X +Int Y <Int pow256 => true  requires X <=Int pow16 andBool Y <Int pow16 [simplification]
 
-    rule X <=Int #ceil32(X)     => true   requires 0 <=Int X                       [simplification]
-    rule #ceil32(X) <Int X      => false  requires 0 <=Int X                       [simplification]
-    rule #ceil32(X) <=Int pow16 => true   requires 0 <=Int X andBool X <=Int pow16 [simplification]
+    rule X <=Int #ceil32(X)             => true   requires 0 <=Int X               [simplification]
+    rule         #ceil32(X)  <Int X     => false  requires 0 <=Int X               [simplification]
+    rule         #ceil32(X) <=Int pow16 => true   requires #range(0 <= X <= pow16) [simplification]
 
   // ########################
   // Gnosis
