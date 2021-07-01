@@ -114,11 +114,11 @@ module VERIFICATION
   // Range
   // ########################
 
-    rule 0 <=Int (_X modInt _Y)         => true                    [simplification]
-    rule         (_X modInt  Y) <Int Y  => true  requires Y >Int 0 [simplification]
+    rule 0 <=Int (_ modInt _)         => true                    [simplification]
+    rule         (_ modInt Y) <Int Y  => true  requires Y >Int 0 [simplification]
 
-    rule 0 <=Int 2 ^Int _X             => true                      [simplification]
-    rule         2 ^Int  X <Int pow256 => true  requires X <Int 256 [simplification]
+    rule 0 <=Int 2 ^Int _             => true                      [simplification]
+    rule         2 ^Int X <Int pow256 => true  requires X <Int 256 [simplification]
 
     rule 0 <=Int X &Int Y             => true  requires #rangeUInt(256, X) andBool #rangeUInt(256, Y) [simplification]
     rule         X &Int Y <Int pow256 => true  requires #rangeUInt(256, X) andBool #rangeUInt(256, Y) [simplification]
